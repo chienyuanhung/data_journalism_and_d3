@@ -123,55 +123,9 @@ function renderTextY(textGroup, newYScale, chosenYaxis) {
   return textGroup;
 }
 
-// function for ToolTip
-function updateToolTip(chosenXAxis, chosenYAxis,  circlesGroup) {
 
-  if (chosenXAxis === "poverty") {
-    var labelX = "Poverty:";
-  }
-  else if (chosenXAxis === "age") {
-    var labelX = "Age:";
-  }
-  else if (chosenXAxis === "income") {
-    var labelX = "Income:";
-  };
-
-  if (chosenYAxis === "smokes") {
-    var labelY = "Smokes:";
-  }
-  else if (chosenYAxis === "obesity") {
-    var labelY = "Obesity:";
-  }
-  else if (chosenYAxis === "healthcare") {
-    var labelXY= "Healthcare:";
-  };
-
-  var toolTip = d3.tip()
-    .attr("class", "d3-tip")
-    .offset([-8, 0])
-    .html(function(d) {
-      return (`${d.state}<br>${labelX} ${d[chosenXAxis]}<br>${labelY} ${d[chosenYAxis]}`);
-    });
-
-  circlesGroup.call(toolTip);
-
-  circlesGroup.on("mouseover", function(data) {
-    toolTip.show(data);
-  })
-    // onmouseout event
-    .on("mouseout", function(data, index) {
-      toolTip.hide(data);
-    });
-
-  return circlesGroup;
-}
-
-
-
-  // Retrieve data from the CSV file and execute everything below
+// Retrieve data from the CSV file and execute everything below
 d3.csv("assets/data/data.csv").then(function(healthData) {
-  
-    //console.log(healthData)
   
     // parse data
     healthData.forEach(function(data) {
@@ -262,6 +216,7 @@ d3.csv("assets/data/data.csv").then(function(healthData) {
         return (`${d.state}<br>${labelX} ${d[chosenXAxis]}<br>${labelY} ${d[chosenYAxis]}`);
       }); 
     
+    // call tool tip
     circlesGroup.call(toolTip)
         .on('mouseover', toolTip.show)
         .on('mouseout', toolTip.hide);
@@ -294,7 +249,6 @@ d3.csv("assets/data/data.csv").then(function(healthData) {
       .classed("inactive", true)
       .text("Obese (%)");
   
-    // var circlesGroup = updateToolTip(chosenXAxis, chosenYAxis, circlesGroup);
   
     // x axis labels event listener
     xlabelsGroup.selectAll("text")
@@ -306,8 +260,6 @@ d3.csv("assets/data/data.csv").then(function(healthData) {
           // replaces chosenXAxis with value
           chosenXAxis = value;
   
-  
-          // functions here found above csv import
           // updates x scale for new data
           xLinearScale = xScale(healthData, chosenXAxis);
   
@@ -318,9 +270,8 @@ d3.csv("assets/data/data.csv").then(function(healthData) {
           circlesGroup = renderCirclesX(circlesGroup, xLinearScale, chosenXAxis);
           textGroup = renderTextX(textGroup, xLinearScale, chosenXAxis);
 
-          // var circlesGroup = updateToolTip(chosenXAxis, chosenYAxis, circlesGroup);
 
-          // changes classes to change bold text
+          // changes classes to change bold text, change label
           if (chosenXAxis === "age") {
             labelX = "Age: "
             povertyLabel
@@ -372,7 +323,6 @@ d3.csv("assets/data/data.csv").then(function(healthData) {
           // replaces chosenYAxis with value
           chosenYAxis = value;
   
-          // functions here found above csv import
           // updates y scale for new data
           yLinearScale = yScale(healthData, chosenYAxis);
   
@@ -382,10 +332,8 @@ d3.csv("assets/data/data.csv").then(function(healthData) {
           // updates circles with new y values
           circlesGroup = renderCirclesY(circlesGroup, yLinearScale, chosenYAxis);
           textGroup = renderTextY(textGroup, yLinearScale, chosenYAxis);
-
-          // var circlesGroup = updateToolTip(chosenXAxis, chosenYAxis, circlesGroup);
   
-          // changes classes to change bold text
+          // changes classes to change bold text, changes label
           if (chosenYAxis === "smokes") {
             labelY = "Smokes: "
             healthcareLabel
