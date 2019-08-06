@@ -105,7 +105,7 @@ function renderTextX(textGroup, newXScale, chosenXaxis) {
 
   textGroup.transition()
     .duration(1000)
-    .attr("x", d => newXScale(d[chosenXAxis]));
+    .attr("x", d => newXScale(d[chosenXAxis])-10);
 
   return textGroup;
 }
@@ -116,17 +116,20 @@ function renderTextY(textGroup, newYScale, chosenYaxis) {
 
   textGroup.transition()
     .duration(1000)
-    .attr("y", d => newYScale(d[chosenYAxis]));
+    .attr("y", d => newYScale(d[chosenYAxis])+5);
 
   return textGroup;
 }
+
+
   // Retrieve data from the CSV file and execute everything below
 d3.csv("assets/data/data.csv").then(function(healthData) {
   
-    console.log(healthData)
+    //console.log(healthData)
   
     // parse data
     healthData.forEach(function(data) {
+      data.state = data.state;
       data.abbr = data.abbr;
       data.poverty = +data.poverty;
       data.age = +data.age;
@@ -136,7 +139,7 @@ d3.csv("assets/data/data.csv").then(function(healthData) {
       data.healthcare = +data.healthcare;
     });
   
-
+  
     // xLinearScale function above csv import
     var xLinearScale = xScale(healthData, chosenXAxis);
   
@@ -158,26 +161,30 @@ d3.csv("assets/data/data.csv").then(function(healthData) {
       .classed("y-axis", true)
       .call(leftAxis);
   
+   // append text
+    var textGroup = chartGroup.append("g")
+      .selectAll("text")
+      .data(healthData)
+      .enter()
+      .append("text")
+      .attr("x", d => xLinearScale(d[chosenXAxis])-10)
+      .attr("y", d => yLinearScale(d[chosenYAxis])+5)
+      .text(d => d.abbr)
+      .attr("fill", "red");
+
     // append initial circles
+   
     var circlesGroup = chartGroup.selectAll("circle")
       .data(healthData)
       .enter()
       .append("circle")
       .attr("cx", d => xLinearScale(d[chosenXAxis]))
       .attr("cy", d => yLinearScale(d[chosenYAxis]))
-      .attr("r", 20)
+      .attr("r", 10)
       .attr("fill", "#69b3a2")
       .attr("opacity", ".5");
-      
-    // append text
-    var textGroup = chartGroup.selectAll("text")
-      .data(healthData)
-      .enter()
-      .append("text")
-      .attr("x", d => xLinearScale(d[chosenXAxis]))
-      .attr("y", d => yLinearScale(d[chosenYAxis]))
-      .text(d => d.abbr);
-
+     
+  
      
     // Create group for  3 x- axis labels
     var xlabelsGroup = chartGroup.append("g")
