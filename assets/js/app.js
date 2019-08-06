@@ -98,6 +98,28 @@ function renderCirclesX(circlesGroup, newXScale, chosenXaxis) {
   
     return circlesGroup;
   }
+
+// function used for updating text group with a transition to
+// new x position
+function renderTextX(textGroup, newXScale, chosenXaxis) {
+
+  textGroup.transition()
+    .duration(1000)
+    .attr("x", d => newXScale(d[chosenXAxis]));
+
+  return textGroup;
+}
+
+// function used for updating text group with a transition to
+// new x position
+function renderTextY(textGroup, newYScale, chosenYaxis) {
+
+  textGroup.transition()
+    .duration(1000)
+    .attr("y", d => newYScale(d[chosenYAxis]));
+
+  return textGroup;
+}
   // Retrieve data from the CSV file and execute everything below
 d3.csv("assets/data/data.csv").then(function(healthData) {
   
@@ -146,7 +168,17 @@ d3.csv("assets/data/data.csv").then(function(healthData) {
       .attr("r", 20)
       .attr("fill", "#69b3a2")
       .attr("opacity", ".5");
-  
+      
+    // append text
+    var textGroup = chartGroup.selectAll("text")
+      .data(healthData)
+      .enter()
+      .append("text")
+      .attr("x", d => xLinearScale(d[chosenXAxis]))
+      .attr("y", d => yLinearScale(d[chosenYAxis]))
+      .text(d => d.abbr);
+
+     
     // Create group for  3 x- axis labels
     var xlabelsGroup = chartGroup.append("g")
       .attr("transform", `translate(${width / 2}, ${height + 20})`);
@@ -169,7 +201,7 @@ d3.csv("assets/data/data.csv").then(function(healthData) {
       .attr("x", 0)
       .attr("y", 60)
       .attr("value", "income") // value to grab for event listener
-      .classed("inactive", true)
+      .classed("active", true)
       .text("Household Income (Median)");
 
     // Create group for  3 y- axis labels
@@ -221,6 +253,7 @@ d3.csv("assets/data/data.csv").then(function(healthData) {
   
           // updates circles with new x values
           circlesGroup = renderCirclesX(circlesGroup, xLinearScale, chosenXAxis);
+          textGroup = renderTextX(textGroup, xLinearScale, chosenXAxis);
 
   
           // changes classes to change bold text
@@ -284,6 +317,7 @@ d3.csv("assets/data/data.csv").then(function(healthData) {
   
           // updates circles with new y values
           circlesGroup = renderCirclesY(circlesGroup, yLinearScale, chosenYAxis);
+          textGroup = renderTextY(textGroup, yLinearScale, chosenYAxis);
   
           // changes classes to change bold text
           if (chosenYAxis === "smokes") {
